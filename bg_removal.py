@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory, send_file
 import threading
 import os
+from datetime import datetime
 
 app = Flask(__name__, static_folder='static')
 
@@ -32,7 +33,10 @@ def remove_bg():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
-    file_path = os.path.join(input_folder, file.filename)
+    
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    filename_with_timestamp = f"{file.filename.split('.')[0]}_{timestamp}.{file.filename.split('.')[1]}"
+    file_path = os.path.join(input_folder, filename_with_timestamp)
     file.save(file_path)
 
     return_data = {}
@@ -40,7 +44,7 @@ def remove_bg():
     print('Acquiring a Semaphore')
     semaphores.acquire()
 
-    t = threading.Thread(target=remove_background, args=(app, file_path, file, return_data))
+    t = threading.Thread(target=remove_background, args=(app, file_path, filename_with_timestamp, return_data))
 
     t.start()
     t.join()

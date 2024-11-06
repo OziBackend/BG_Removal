@@ -4,12 +4,12 @@ from flask import jsonify, url_for
 
 import configuration.environment as config
 
-def remove_background(app, file_path, file, return_data):
+def remove_background(app, file_path, filename_with_time, return_data):
     with app.app_context():
         try:
             print('Try Statement')
 
-            filename = file.filename.split('.')[0] + '.png'
+            filename = filename_with_time.split('.')[0] + '.png'
             input_image = Image.open(file_path)
 
             #path for an output image
