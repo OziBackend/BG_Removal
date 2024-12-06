@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify, send_from_directory, send_file
 import threading
 import os
+import random
 from datetime import datetime
+import uuid
 
 app = Flask(__name__, static_folder='static')
 
@@ -23,6 +25,14 @@ from controller.controller import remove_background
 
 input_folder = "static/input"
 
+@app.route('/bg_removal/checkserver', methods=['GET'])
+def checkserver():
+    return jsonify({
+        "flag": True,
+        "message":"Server Running",
+        "appname" : "BG Remover"
+    }), 200
+
 @app.route('/remove_bg', methods=['POST'])
 def remove_bg():
     print('Function Remove_BG called')
@@ -32,10 +42,12 @@ def remove_bg():
 
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
-
+    
+    
+    unique_id = str(uuid.uuid4())
     
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    filename_with_timestamp = f"{file.filename.split('.')[0]}_{timestamp}.{file.filename.split('.')[1]}"
+    filename_with_timestamp = f"{file.filename.split('.')[0]}_{unique_id}_{timestamp}.{file.filename.split('.')[1]}"
     file_path = os.path.join(input_folder, filename_with_timestamp)
     file.save(file_path)
 
